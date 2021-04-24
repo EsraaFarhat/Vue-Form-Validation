@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <script src="./vue.js"></script>
+</head>
+
+<body>
+    <div id="mainApp" class="container mt-3">
+        <form id="app" class="row" method="GET" action="#" v-if="isFormVisible" @submit="checkForm">
+            <div class="mb-3 col-12">
+                <p v-if="errors.length">
+                    <b>Please correct the following error(s):</b>
+                    <ul>
+                        <li v-for="error in errors" class="alert alert-danger">{{ error }}</li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mb-3 col-12">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" v-model="post.title">
+            </div>
+            <div class="mb-3 col-12">
+                <label for="content" class="form-label">Content</label>
+                <textarea name="content" id="content" class="form-control" v-model="post.content"></textarea>
+            </div>
+            <div class="mb-3 form-check col-12">
+                <input type="checkbox" class="form-check-input" id="shareImmediately" v-model="post.shareImmediately"
+                    true-value="Immediately" false-value="Later">
+                <label class="form-check-label" for="shareImmediately">Share Immediately</label>
+            </div>
+            <div class="mb-3 form-check col-12">
+                <h5>Share on</h5>
+                <div v-for="media in postData.shareOn">
+                    <input type="checkbox" v-model="post.shareOn" class="form-check-input" :value="media" :name="media"
+                        :id="media">
+                    <label class="form-check-label" :for="media">{{media}}</label>
+                </div>
+            </div>
+            <div class="mb-3 form-radio col-12">
+                <h5>Categories</h5>
+                <div v-for="category in postData.categories">
+                    <input type="radio" v-model="post.categories" class="form-check-input" :value="category"
+                        :name="category" :id="category">
+                    <label class="form-radio-label" :for="category">{{category}}</label>
+                </div>
+            </div>
+            <div class="mb-3 form-select col-12">
+                <h5>Series</h5>
+                <select v-model="post.series" class="form-control">
+                    <option v-for="series in postData.series" :value="series">{{series}}</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mb-5" >Submit</button>
+        </form>
+
+        <table class="table table-striped w-100" v-if="isFormVisible == false">
+            <tbody>
+                <tr class="row">
+                    <td class="col-6">Title</td>
+                    <td class="col-6">{{post.title}}</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-6">Content</td>
+                    <td class="col-6" style="white-space: pre;">{{post.content}}</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-6">Share Immediately</td>
+                    <td class="col-6">{{post.shareImmediately}}</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-6">Share on</td>
+                    <td class="col-6">
+                        <ul>
+                            <li v-for="media in post.shareOn">{{media}}</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-6">Categories</td>
+                    <td class="col-6">{{post.categories}}</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-6">Series</td>
+                    <td class="col-6">{{post.series}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <script src="js/bootstrap.js"></script>
+    <script src="js/JQuery-3.3.1.js"></script>
+    <script src="js/popper.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data: () => ({
+                el: '#app',
+                post: {
+                    title: "",
+                    content: "",
+                    shareImmediately: "Later",
+                    shareOn: [],
+                    categories: "",
+                    series: "",
+                },
+                postData: {
+                    shareOn: ['Facebook', 'Twitter', 'Google Plus', 'Youtube'],
+                    categories: ['development', 'UI', 'UX', 'SWE'],
+                    series: ['first edition', 'second edition', 'third edition'],
+                },
+                isFormVisible: true,
+                errors: [],
+            }),
+            methods: {
+                checkForm: function (e) {
+                    if (this.post.title && this.post.content && this.post.categories && this.post.series && this.post.shareOn.length != 0) {
+                        this.isFormVisible = false;
+                        return true;
+                    }
+
+                    this.errors = [];
+
+                    if (!this.post.title) {
+                        this.errors.push('Title required.');
+                    }
+                    if (!this.post.content) {
+                        this.errors.push('Content required.');
+                    }
+                    if (this.post.shareOn.length == 0) {
+                        this.errors.push('Share On required.');
+                    }
+                    if (!this.post.categories) {
+                        this.errors.push('Categories required.');
+                    }
+                    if (!this.post.series) {
+                        this.errors.push('Series required.');
+                    }
+
+                    this.isFormVisible = true;
+                    e.preventDefault();
+                }
+            },
+
+        });
+
+        app.mount('#mainApp');
+    </script>
+</body>
+
+</html>
